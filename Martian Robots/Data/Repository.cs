@@ -14,6 +14,10 @@ namespace Martian_Robots.Data
 
         private string path = Path.Combine(
                 Directory.GetCurrentDirectory(), "wwwroot\\json", "movements.json");
+        /// <summary>
+        /// Get Settings of Settings.json
+        /// </summary>
+        /// <returns>object setting with lenghX and lengh Y</returns>
         public Settings GetSettings()
         {
             try
@@ -56,6 +60,10 @@ namespace Martian_Robots.Data
                 return null;
             }
         }
+        /// <summary>
+        /// Remove all movement of movements.json
+        /// </summary>
+        /// <returns></returns>
         public bool RemoveAllMovements()
         {
             try
@@ -73,6 +81,10 @@ namespace Martian_Robots.Data
                 return false;
             }
         }
+        /// <summary>
+        /// MovementLength to ID movement
+        /// </summary>
+        /// <returns></returns>
         public int MovementLength()
         {
             try
@@ -137,6 +149,11 @@ namespace Martian_Robots.Data
                 return false;
             }
         }
+        /// <summary>
+        /// Get last movement of user 
+        /// </summary>
+        /// <param name="user">robot name</param>
+        /// <returns></returns>
         public Movement getLastMoveByUser(string user)
         {
             try
@@ -152,6 +169,10 @@ namespace Martian_Robots.Data
                 return null;
             }
         }
+        /// <summary>
+        /// last  movement in board
+        /// </summary>
+        /// <returns></returns>
         public Movement getLastMoveNotLost()
         {
             try
@@ -168,6 +189,10 @@ namespace Martian_Robots.Data
                 return null;
             }
         }
+        /// <summary>
+        /// get all the robots lost
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Movement> getLastAllRobotsLost()
         {
             try

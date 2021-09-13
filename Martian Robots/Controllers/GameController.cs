@@ -23,6 +23,11 @@ namespace Martian_Robots.Controllers
             _logger = logger;
             this.repository = repository;
         }
+        /// <summary>
+        /// Get movements for the grid
+        /// </summary>
+        /// <param name="loadOptions"></param>
+        /// <returns>json of movements</returns>
         [HttpGet]
         public Object GetMovements(DataSourceLoadOptions loadOptions)
         {
@@ -41,6 +46,11 @@ namespace Martian_Robots.Controllers
                 return Ok(ModelState);
             }
         }
+        /// <summary>
+        /// when starts the game check if the name of the robot is lost or no
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult StartRobot(string user)
         {
@@ -61,6 +71,11 @@ namespace Martian_Robots.Controllers
                 return Ok(ModelState);
             }
         }
+        /// <summary>
+        /// reset game
+        /// </summary>
+        /// <param name="user">robot name</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ResetGame(string user)
         {
@@ -77,6 +92,11 @@ namespace Martian_Robots.Controllers
                 return Ok(ModelState);
             }
         }
+        /// <summary>
+        /// get lastMovement and lost robots to print the board
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetRobot(string user)
         {
@@ -96,6 +116,12 @@ namespace Martian_Robots.Controllers
                 return Ok(ModelState);
             }
         }
+        /// <summary>
+        /// move the robot 
+        /// </summary>
+        /// <param name="user">robot name</param>
+        /// <param name="intruction">instruction to move</param>
+        /// <returns>robot to move</returns>
         [HttpPost]
         public IActionResult Move(string user,char intruction)
         {
@@ -154,7 +180,12 @@ namespace Martian_Robots.Controllers
                 return Ok(ModelState);
             }
         }
-
+        /// <summary>
+        /// check if the robot is out of the board or if it is scent 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="move"></param>
+        /// <returns></returns>
         private bool robotIsLost(Settings settings, Movement move)
         {
 
@@ -176,6 +207,12 @@ namespace Martian_Robots.Controllers
             return false;
         }
 
+        /// <summary>
+        /// put last move in the object movement
+        /// </summary>
+        /// <param name="lastMoveUser"></param>
+        /// <param name="settings"></param>
+        /// <param name="move"></param>
         private void positionBefore(Movement lastMoveUser, Settings settings, Movement move)
         {
             if (lastMoveUser == null)
