@@ -1,0 +1,464 @@
+﻿@model GameViewModel
+@{
+    ViewData["Title"] = "Martian Robots";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Martian Robots</h1>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 offset-sm-3">
+                    @*<div class="dx-fieldset-Label">Robot Name:</div>*@
+                    @(Html.DevExtreme().TextBox().ID("RobotName")
+                                         .Placeholder("Robot Name")
+                                         .Value(Model.NameRobot)
+                                         .Disabled(Model.isRobotPlaying)
+                            )
+                </div>
+                <div class="col-sm-2">
+                    @(Html.DevExtreme().Button()
+                        .Text("Start Robot")
+                        .ID("startRobot")
+                        .Type(ButtonType.Success)
+                        .StylingMode(ButtonStylingMode.Outlined)
+                        .Disabled(false)
+                        .Icon("todo")
+                        .OnClick("btStartRobot")
+                        .Disabled(Model.isRobotPlaying)
+                    )
+                </div>
+                <div class="col-sm-2">
+                    @(Html.DevExtreme().Button()
+                        .Text("Reset Game")
+                        .ID("reset")
+                        .Type(ButtonType.Danger)
+                        .StylingMode(ButtonStylingMode.Outlined)
+                        .Disabled(false)
+                        .Icon("revert")
+                        .OnClick("btReset")
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-sm-10">
+                    <h5 class="card-title text-center">Instructions:</h5>
+                </div>
+                <div class="col-sm-2">
+                    <a id="scentCaption"> <i class="fa fa-info-circle"></i></a><span class="caption_scent"> Scent  </span>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col-sm-4">
+                    @(Html.DevExtreme().Button()
+                        .Text("Move Left (L)")
+                        .ID("left")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .Disabled(true)
+                        .OnClick("btMoveLeft")
+                        .Disabled(!Model.isRobotPlaying)
+                    )
+                </div>
+                <div class="col-sm-4">
+                    @(Html.DevExtreme().Button()
+                        .Text("Move Right (R)")
+                        .ID("right")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .Disabled(true)
+                        .OnClick("btMoveRight")
+                        .Disabled(!Model.isRobotPlaying)
+                    )
+                </div>
+                <div class="col-sm-4">
+                    @(Html.DevExtreme().Button()
+                        .Text("Move Forward (F)")
+                        .ID("forward")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .Disabled(true)
+                        .OnClick("btMoveForward")
+                        .Disabled(!Model.isRobotPlaying)
+                    )
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <p> <center><h5>Board Game</h5></center></p>
+                    <div>
+                        <div id="board">
+                            <div class="cell">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            @*@(Html.DevExtreme().TextArea()
+                                    .ID("Input")
+                                    .AutoResizeEnabled(true)
+                                    .Height(120)
+
+                                )*@
+                            @(Html.DevExtreme().DataGrid<Movement>()
+                                                                                                .ID("gridInput")
+                                                                                                .NoDataText("INPUT EMPTY")
+                                                                                                .RowAlternationEnabled(true)
+                                                                                                .OnToolbarPreparing("toolbar_preparingInput")
+                                                                                                .Editing(e => e.AllowDeleting(false))
+                                                                                                .DataSource(ds => ds.Mvc()
+                                                                                                    .Controller("Game")
+                                                                                                    .LoadAction("GetMovements")
+                                                                                                    //.LoadParams(new { user = new JS("function() { return user; }"), idEspecie = new JS("function() { return idEspecieSeleccionado; }"), fechaInicio = new JS("function() { return fechaInicio; }"), fechaFin = new JS("function() { return fechaFin; }") })
+                                                                                                    .Key("Id")
+                                        )
+                                                                                                .AllowColumnResizing(true)
+                                                                                                .ColumnAutoWidth(true)
+                                                                                                .Paging(paging => paging.PageSize(8))
+                                                                                                .Pager(pager =>
+                                                                                                {
+                                                                                                    pager.ShowPageSizeSelector(true);
+                                                                                                    pager.AllowedPageSizes(new List<int> { 5, 8, 20 });
+                                                                                                    pager.ShowInfo(true);
+                                                                                                })
+                                                                                                .Columns(columns =>
+                                                                                                {
+                                                                                                    columns.AddFor(m => m.Id).Caption("Nº.");
+                                                                                                    columns.AddFor(m => m.InstructionMove).Alignment(HorizontalAlignment.Center).Caption("Instruction");
+                                                                                                    columns.AddFor(m => m.PositionBeforeX).Caption("X");
+                                                                                                    columns.AddFor(m => m.PositionBeforeY).Caption("Y");
+                                                                                                    columns.AddFor(m => m.OrientationBefore).Caption("Orientation").Alignment(HorizontalAlignment.Center);
+                                                                                                    columns.AddFor(m => m.User).Caption("Robot");
+
+
+
+                                                                                                })
+                                                                                )
+                        </div>
+
+                        <div class="col-sm-12">
+                            <br />
+                            @(Html.DevExtreme().DataGrid<Movement>()
+                                                                                                .ID("gridOutput")
+                                                                                                .NoDataText("OUTPUT EMPTY")
+                                                                                                .RowAlternationEnabled(true)
+                                                                                                .Editing(e => e.AllowDeleting(false))
+                                                                                                .DataSource(ds => ds.Mvc()
+                                                                                                    .Controller("Game")
+                                                                                                    .LoadAction("GetMovements")
+                                                                                                    //.LoadParams(new { user = new JS("function() { return user; }"), idEspecie = new JS("function() { return idEspecieSeleccionado; }"), fechaInicio = new JS("function() { return fechaInicio; }"), fechaFin = new JS("function() { return fechaFin; }") })
+                                                                                                    .Key("Id")
+                                        )
+                                                                                                .AllowColumnResizing(true)
+                                                                                                .ColumnAutoWidth(true)
+                                                                                                .OnToolbarPreparing("toolbar_preparingOutput")
+                                                                                                .Paging(paging => paging.PageSize(8))
+                                                                                                .Pager(pager =>
+                                                                                                {
+                                                                                                    pager.ShowPageSizeSelector(true);
+                                                                                                    pager.AllowedPageSizes(new List<int> { 5, 8, 20 });
+                                                                                                    pager.ShowInfo(true);
+                                                                                                })
+                                                                                                .Columns(columns =>
+                                                                                                {
+                                                                                                    columns.AddFor(m => m.Id).Caption("Nº.");
+                                                                                                    columns.AddFor(m => m.isOut).Caption("is Lost ");
+                                                                                                    columns.AddFor(m => m.PositionAfterX).Caption("X");
+                                                                                                    columns.AddFor(m => m.PositionAfterY).Caption("Y");
+                                                                                                    columns.AddFor(m => m.OrientationAfter).Caption("Orientation").Alignment(HorizontalAlignment.Center);
+
+                                                                                                    columns.AddFor(m => m.User).Caption("Robot");
+
+
+
+                                                                                                })
+                                                                                )
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@(Html.DevExtreme().Tooltip()
+            .ContentTemplate("The scent is left at the last grid position the robot occupied before disappearing over  the edge. An instruction to move 'off' the world from a grid point from which a robot  has been previously lost is simply ignored by the current robot.")
+            .Target("#scentCaption")
+            .ShowEvent("mouseenter")
+            .HideEvent("mouseleave")
+            .CloseOnOutsideClick(false)
+            .Position(Position.Top)
+            .Animation(a => a
+                .Show(s => s
+                    .Type(AnimationType.Slide)
+                    .From(new { top = -100, opacity = 0 })
+                    .To(new { top = 0, opacity = 1 })
+                )
+                .Hide(h => h
+                    .Type(AnimationType.Pop)
+                    .From(new { scale = 1, opacity = 1 })
+                    .To(new { scale = 0.1, opacity = 0 })
+                )
+            )
+        )
+<script>
+
+    function btStartRobot() {
+        var name = $("#RobotName").dxTextBox("instance").option('value');
+
+
+
+        if (name.length < 1) return DevExpress.ui.notify("Robot name is necessary", "error", 4000);
+
+
+        var startRobot = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/StartRobot?user=" + $("#RobotName").dxTextBox("instance").option('value'),
+            "method": "GET",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(startRobot).done(function (response) {
+            console.log(response);
+
+
+            $("#left").dxButton("instance").option('disabled', false);
+            $("#right").dxButton("instance").option('disabled', false);
+            $("#forward").dxButton("instance").option('disabled', false);
+            $("#startRobot").dxButton("instance").option('disabled', true);
+            $("#RobotName").dxTextBox("instance").option('disabled', true);
+        }).fail(function (response) {
+            console.log(response);
+            $("#RobotName").dxTextBox("instance").option('value', "");
+            $("#RobotName").dxTextBox("instance").option('disabled', false);
+            return DevExpress.ui.notify(response.responseText, "error", 4000);
+        });
+
+
+
+
+    }
+    function btReset() {
+        var resetGame = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/ResetGame",
+            "method": "GET",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(resetGame).done(function (response) {
+            console.log(response);
+            DevExpress.ui.notify("New Game", "success", 4000);
+            $("#RobotName").dxTextBox("instance").option('value', "");
+            $("#RobotName").dxTextBox("instance").option('disabled', false);
+            $("#startRobot").dxButton("instance").option('disabled', false);
+            $("#left").dxButton("instance").option('disabled', true);
+            $("#right").dxButton("instance").option('disabled', true);
+            $("#forward").dxButton("instance").option('disabled', true);
+            refreshGrid();
+            printRobot();
+        });
+    }
+    function btMoveRight() {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/Move?user=" + $("#RobotName").dxTextBox("instance").option('value')+"&intruction=R",
+            "method": "POST",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            checkRobot(response);
+        }).fail(function (response) {
+            console.log(response);
+            return DevExpress.ui.notify(response.responseText, "error", 4000);
+        });
+    }
+    function btMoveLeft() {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/Move?user=" + $("#RobotName").dxTextBox("instance").option('value') + "&intruction=L",
+            "method": "POST",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            checkRobot(response);
+        }).fail(function (response) {
+            console.log(response);
+            return DevExpress.ui.notify(response.responseText, "error", 4000);
+        });
+    }
+
+    function btMoveForward() {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/Move?user=" + $("#RobotName").dxTextBox("instance").option('value') + "&intruction=F",
+            "method": "POST",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            checkRobot(response);
+        }).fail(function (response) {
+            console.log(response);
+            return DevExpress.ui.notify(response.responseText, "error", 4000);
+        });
+    }
+
+    function refreshGrid() {
+        let gridInput = $("#gridInput").dxDataGrid("instance");
+        gridInput.getDataSource().reload();
+        let gridOutput = $("#gridOutput").dxDataGrid("instance");
+        gridOutput.getDataSource().reload();
+    }
+    function checkRobot(robot) {
+        if (robot.isOut) {
+            $("#RobotName").dxTextBox("instance").option('value', "");
+            $("#RobotName").dxTextBox("instance").option('disabled', false);
+            $("#startRobot").dxButton("instance").option('disabled', false);
+            $("#left").dxButton("instance").option('disabled', true);
+            $("#right").dxButton("instance").option('disabled', true);
+            $("#forward").dxButton("instance").option('disabled', true);
+            DevExpress.ui.notify("Robot out, play with other robot", "error", 4000);
+        }
+        refreshGrid();
+        printRobot();
+    }
+
+    function printRobot() {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/Game/GetRobot?user=" + $("#RobotName").dxTextBox("instance").option('value'),
+            "method": "GET",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            printBoard(response.robot, response.robotsLost);
+        });
+    }
+
+    var boardSizeX = @Model.settings.lenX;
+    var boardSizeY = @Model.settings.lenY;
+
+    $(function () { //on load
+        printRobot();
+    });
+
+    function printBoard(robot, robotsLost) {
+        var maxRow = parseInt(boardSizeY);//8
+        var maxCol = parseInt(boardSizeX);//5
+        var num = 1;
+        if (robot == null) {
+            robot = new Object;
+            robot.PositionAfterX = maxCol - 1;
+            robot.PositionAfterY = maxRow - 1;
+            robot.OrientationAfter = 'S';
+        }
+        $("#board").empty();
+        var myTable = $("<table oncontextmenu=\"return false\"></table>").appendTo("#board");
+        for (var row = maxRow - 1; row >= 0; row--) {
+            var myRow = $("<tr></tr>").appendTo(myTable);
+            for (var col = 0; col < maxCol; col++) {
+                var myCell = null;
+                var idPosCell = "td." + "cell" + num;
+                if (robot.PositionAfterX == col && robot.PositionAfterY == row) {
+                    //myRow.append('<td class="cell' + num + '"> [' + col + "][" + row + "] " + robot.OrientationAfter + "</td > ");
+                    myRow.append('<td class="cell' + num + '">' + "</td>");
+                    switch (robot.OrientationAfter) {
+                        case 'S':
+                            myRow.find(idPosCell).addClass("robot_S");
+                            break;
+                        case 'N':
+                            myRow.find(idPosCell).addClass("robot_N");
+                            break;
+                        case 'E':
+                            myRow.find(idPosCell).addClass("robot_E");
+                            break;
+                        case 'W':
+                            myRow.find(idPosCell).addClass("robot_W");
+                            break;
+                        default:
+                            myRow.find(idPosCell).addClass("robot_S");
+                            break;
+                    }
+
+                } else {
+                    myRow.append('<td class="cell' + num + '">' + "</td>");
+                    //myRow.append("<td> [" + col + "][" + row + "] " + num + "</td>");
+                }
+                for (var rLost in robotsLost) {
+                    if (robotsLost[rLost].PositionBeforeX == col && robotsLost[rLost].PositionBeforeY == row) {
+                        console.log(robotsLost[rLost]);
+                        myRow.find(idPosCell).addClass("scent");
+                    }
+                }
+
+                //myRow.append("<td> [" + row + "][" + col + "] " + num + "</td>");
+                num++;
+            }
+        }
+    }
+
+    function toolbar_preparingInput(e) {
+        var dataGrid = e.component;
+
+        e.toolbarOptions.items.unshift({
+            location: "before",
+            template: function () {
+                return $("<div/>")
+                    .addClass("informer")
+                    .append(
+                        $("<h5 />")
+                            .text("Input:")
+                    );
+            }
+        });
+    }
+    function toolbar_preparingOutput(e) {
+        var dataGrid = e.component;
+
+        e.toolbarOptions.items.unshift({
+            location: "before",
+            template: function () {
+                return $("<div/>")
+                    .addClass("informer")
+                    .append(
+                        $("<h5 />")
+                            .text("Output:")
+                    );
+            }
+        });
+    }
+</script>

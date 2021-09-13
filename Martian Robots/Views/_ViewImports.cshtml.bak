@@ -1,0 +1,3 @@
+﻿@using Martian_Robots
+@using Martian_Robots.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
