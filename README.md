@@ -9,3 +9,6 @@ It has a small database to save the movements and the configuration of the board
 To start playing you have to enter the name of the robot and click on the "Start Robot" button,
 you can move the robot with the L, R and F buttons until it leaves the board. Once this happens,
 you will have to write another robot name to start the next movement of the new robot.
+
+
+It is published in Microsoft Azure: https://martianrobots20210913154448.azurewebsites.net/
